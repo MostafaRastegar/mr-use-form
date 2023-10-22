@@ -1,4 +1,4 @@
-import { object, string, number, date, InferType } from "yup";
+import { object, string } from "yup";
 import "./App.css";
 import useMrUseForm from "./libs/useMrUseForm";
 import Input from "./components/Input";
@@ -18,9 +18,8 @@ const initialFormInputs = {
 };
 
 function App() {
-  const { formInputs, handleOnChange, handleFormSubmit, error } =
+  const { formInputs, handleOnChange, handleFormSubmit, errors } =
     useMrUseForm<FormInputs>(initialFormInputs, userSchema);
-  console.log("error :>> ", error);
   return (
     <form onSubmit={handleFormSubmit}>
       <div>
@@ -31,7 +30,7 @@ function App() {
           onChange={handleOnChange}
           value={formInputs.firstName}
           placeholder="enter your first name"
-          errorMessage={error.name === "firstName" ? error.message : ""}
+          errorValidation={errors["firstName"]?.message}
         />
 
         <Input
@@ -41,7 +40,7 @@ function App() {
           onChange={handleOnChange}
           value={formInputs.lastName}
           placeholder="enter your last name"
-          errorMessage={error.name === "lastName" ? error.message : ""}
+          errorValidation={errors["lastName"]?.message}
         />
       </div>
 

@@ -1,35 +1,60 @@
 import { useState } from "react";
-import { AnyObject, ObjectSchema } from "yup";
+import {
+  AnyObject,
+  ObjectSchema,
+  ValidationError,
+  CreateErrorOptions,
+} from "yup";
 
-const useSignUpForm = <T,>(
+const createErrorsObject = (
+  errors: CreateErrorOptions[],
+  callBackFunction: Function
+) => {
+  const objectErrors = errors.reduce(
+    (accumulator = {}, validationError: CreateErrorOptions) => {
+      if (!validationError.path) {
+        return {};
+      }
+      return {
+        ...accumulator,
+        [validationError.path]: validationError,
+      };
+    },
+    {}
+  );
+
+  return callBackFunction(objectErrors);
+};
+
+const useMrUseForm = <T,>(
   initialFormInputs: T,
   schema: ObjectSchema<AnyObject>
 ) => {
   const [formInputs, setFormInputs] = useState<T>(initialFormInputs);
-  const [error, setError] = useState({
-    name: "",
-    message: "",
-  });
+  const [errors, setErrors] = useState<{ [key: string]: CreateErrorOptions }>(
+    {}
+  );
 
   const handleFormSubmit = async (
-    event: React.SyntheticEvent<HTMLFormElement>
+    event: React.SyntheticEvent<HTMLFormElement>,
+    formData?: T
   ) => {
     if (event) {
       event.preventDefault();
-
+      if (formData) {
+        setFormInputs(formData);
+      }
       try {
-        const result = await schema.validate(formInputs);
-        setError({
-          name: "",
-          message: "",
+        const result = await schema.validate(formData ?? formInputs, {
+          abortEarly: false,
         });
+        setErrors({});
         return result;
-      } catch (errors) {
-        const { path, message } = JSON.parse(JSON.stringify(errors));
-        setError({
-          name: path,
-          message: message,
-        });
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          const { inner } = JSON.parse(JSON.stringify(error));
+          createErrorsObject(inner, setErrors);
+        }
       }
     }
   };
@@ -46,8 +71,8 @@ const useSignUpForm = <T,>(
     handleFormSubmit,
     handleOnChange,
     formInputs,
-    error,
+    errors,
   };
 };
 
-export default useSignUpForm;
+export default useMrUseForm;

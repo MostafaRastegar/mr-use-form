@@ -5,19 +5,18 @@ interface CustomInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   name: string;
   label: string;
-  errorMessage?: string;
+  errorValidation?: unknown;
   [key: string]: unknown;
 }
-const ErrorMessage = ({ message }: { message: string }) => (
-  <p className="error">{message}</p>
-);
+const showErrorMessage = (message: string) =>
+  !!message ? <p className="error">{message}</p> : null;
 
 const CustomInput: React.FC<CustomInputProps> = ({
   type,
   value,
   onChange,
   name,
-  errorMessage,
+  errorValidation,
   label,
   ...rest
 }) => {
@@ -32,10 +31,10 @@ const CustomInput: React.FC<CustomInputProps> = ({
           name={name}
           {...rest}
         />
-        {!!errorMessage && <ErrorMessage message={errorMessage} />}
+        {showErrorMessage(errorValidation as string)}
       </div>
     );
-  }, [value, errorMessage]);
+  }, [value, errorValidation]);
   return memoInput;
 };
 export default CustomInput;
