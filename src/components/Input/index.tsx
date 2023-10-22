@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-interface CustomInputProps {
+interface InputProps {
   type: string;
   value: any;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -8,10 +7,14 @@ interface CustomInputProps {
   errorValidation?: unknown;
   [key: string]: unknown;
 }
+
 const showErrorMessage = (message: string) =>
   !!message ? <p className="error">{message}</p> : null;
 
-const CustomInput: React.FC<CustomInputProps> = ({
+/**
+ * Input kit for easy handle onChange and showing validation error
+ */
+const Input: React.FC<InputProps> = ({
   type,
   value,
   onChange,
@@ -19,22 +22,12 @@ const CustomInput: React.FC<CustomInputProps> = ({
   errorValidation,
   label,
   ...rest
-}) => {
-  const memoInput = useMemo(() => {
-    return (
-      <div className="input-field">
-        <label htmlFor={name}>{label}</label>
-        <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          name={name}
-          {...rest}
-        />
-        {showErrorMessage(errorValidation as string)}
-      </div>
-    );
-  }, [value, errorValidation]);
-  return memoInput;
-};
-export default CustomInput;
+}) => (
+  <div className="input-field">
+    <label htmlFor={name}>{label}</label>
+    <input type={type} onBlur={onChange} name={name} {...rest} />
+    {showErrorMessage(errorValidation as string)}
+  </div>
+);
+
+export default Input;

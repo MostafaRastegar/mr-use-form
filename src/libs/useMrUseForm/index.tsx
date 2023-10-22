@@ -6,31 +6,37 @@ import {
   CreateErrorOptions,
 } from "yup";
 
-const createErrorsObject = (
+const createErrorsObjects = (
   errors: CreateErrorOptions[],
-  callBackFunction: Function
+  callBackFunction: (v: AnyObject) => void
 ) => {
-  const objectErrors = errors.reduce(
-    (accumulator = {}, validationError: CreateErrorOptions) => {
+  const errorsObject = errors.reduce(
+    (mergedErrorsObject = {}, validationError: CreateErrorOptions) => {
       if (!validationError.path) {
         return {};
       }
       return {
-        ...accumulator,
+        ...mergedErrorsObject,
         [validationError.path]: validationError,
       };
     },
     {}
   );
 
-  return callBackFunction(objectErrors);
+  return callBackFunction(errorsObject);
 };
 
+/**
+ * useMrUseForm handle formSubmit and onChange inputs.
+ * @param {T} initialValues - this for initiate form inputs in first load
+ * @param {ObjectSchema<AnyObject>} schema - validation schema object by yup
+ */
+
 const useMrUseForm = <T,>(
-  initialFormInputs: T,
+  initialValues: T,
   schema: ObjectSchema<AnyObject>
 ) => {
-  const [formInputs, setFormInputs] = useState<T>(initialFormInputs);
+  const [formInputs, setFormInputs] = useState<T>(initialValues);
   const [errors, setErrors] = useState<{ [key: string]: CreateErrorOptions }>(
     {}
   );
@@ -39,22 +45,20 @@ const useMrUseForm = <T,>(
     event: React.SyntheticEvent<HTMLFormElement>,
     formData?: T
   ) => {
-    if (event) {
-      event.preventDefault();
-      if (formData) {
-        setFormInputs(formData);
-      }
-      try {
-        const result = await schema.validate(formData ?? formInputs, {
-          abortEarly: false,
-        });
-        setErrors({});
-        return result;
-      } catch (error) {
-        if (error instanceof ValidationError) {
-          const { inner } = JSON.parse(JSON.stringify(error));
-          createErrorsObject(inner, setErrors);
-        }
+    event.preventDefault();
+    if (formData) {
+      setFormInputs(formData);
+    }
+    try {
+      const result = await schema.validate(formData ?? formInputs, {
+        abortEarly: false,
+      });
+      setErrors({});
+      return result;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        const { inner } = JSON.parse(JSON.stringify(error));
+        createErrorsObjects(inner, setErrors);
       }
     }
   };

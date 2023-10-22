@@ -10,8 +10,8 @@ form {
 label {
   font-size: 16px;
   color: #333;
-  margin-top: 15px;
-  margin-bottom: 5px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 
 .input-group {
@@ -34,22 +34,22 @@ label {
 }
 
 input {
-  height: 35px;
+  height: 38px;
   padding: 4px 8px;
   font-size: 16px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 button[type="submit"] {
-  margin-top: 20px;
+  margin-top: 16px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
   border: none;
-  height: 35px;
-  padding: 5px 10px;
-  border-radius: 5px;
+  height: 36px;
+  padding: 8px 16px;
+  border-radius: 8px;
 }
 
 button[type="submit"]:hover {
@@ -60,7 +60,8 @@ p {
   position: absolute;
   color: red;
   font-size: 12px;
-  margin: 5px 0;
+  margin: 8px 0;
   left: 0;
-  bottom: 0px;
+
+  bottom: -12px;
 }
