@@ -64,7 +64,6 @@ const useMrUseForm = <T,>(
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.persist();
     setFormInputs((formInputs) => ({
       ...formInputs,
       [event.target.name]: event.target.value,
